@@ -2,6 +2,7 @@
   'use strict';
 
   var YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3/channels';
+  var MIN_REFRESH_INTERVAL = 2;
 
   // DOM references
   var setupPanel = document.getElementById('setup-panel');
@@ -80,6 +81,7 @@
   function updateDisplay(info) {
     channelNameEl.textContent = info.name;
     channelAvatarEl.src = info.avatar;
+    channelAvatarEl.alt = info.name + ' avatar';
 
     if (info.hiddenCount) {
       subscriberCountEl.textContent = 'Hidden';
@@ -89,6 +91,7 @@
   }
 
   function startPolling(apiKey, channelId, intervalSec) {
+    stopPolling();
     function poll() {
       fetchSubscriberCount(apiKey, channelId)
         .then(function (info) {
@@ -127,7 +130,7 @@
       return;
     }
 
-    if (isNaN(interval) || interval < 2) {
+    if (isNaN(interval) || interval < MIN_REFRESH_INTERVAL) {
       interval = 5;
     }
 
