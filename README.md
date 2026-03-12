@@ -65,6 +65,20 @@ Use this as a **Browser Source** in OBS for a beautiful live subscriber count ov
 | `style.css`  | Styling (dark theme + OBS overlay)   |
 | `script.js`  | Fetches and displays subscriber data |
 
+## YouTube API Subscriber Count Limitation
+
+Since August 2019, the YouTube Data API v3 returns **approximate (abbreviated) subscriber counts** for channels with 1,000 or more subscribers. The counts are rounded to three significant figures:
+
+| Subscriber range   | Rounding          | Example              |
+| ------------------ | ----------------- | -------------------- |
+| 0 – 999            | Exact             | 876 → 876            |
+| 1,000 – 9,999      | Nearest 10        | 1,234 → 1,230        |
+| 10,000 – 99,999    | Nearest 100       | 45,678 → 45,700      |
+| 100,000 – 999,999  | Nearest 1,000     | 100,369 → 100,000    |
+| 1,000,000+         | Nearest 10,000    | 1,234,567 → 1,230,000|
+
+This is a YouTube platform limitation, not a bug in this tool. The app displays a **≈** prefix and an informational note when the count is approximate. Channel owners can see their exact subscriber count in [YouTube Studio](https://studio.youtube.com/).
+
 ## License
 
 MIT
