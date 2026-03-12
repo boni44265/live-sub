@@ -153,6 +153,15 @@ button:hover {
   margin-top: 0.5rem;
 }
 
+/* ---------- Approximate note ---------- */
+.approx-note {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.2rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
 /* ============================================
    OBS Overlay Mode
    Activated via URL params (?key=...&channel=...)
@@ -223,6 +232,10 @@ body.overlay-mode .label {
 }
 
 body.overlay-mode #stop-btn {
+  display: none;
+}
+
+body.overlay-mode .approx-note {
   display: none;
 }
 

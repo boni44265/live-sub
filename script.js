@@ -16,6 +16,7 @@
   var channelAvatarEl = document.getElementById('channel-avatar');
   var stopBtn = document.getElementById('stop-btn');
   var errorEl = document.getElementById('error-message');
+  var approxNoteEl = document.getElementById('approx-note');
 
   var timerId = null;
   var isOverlayMode = false;
@@ -54,6 +55,10 @@
 
   function formatNumber(num) {
     return Number(num).toLocaleString();
+  }
+
+  function isApproximate(count) {
+    return Number(count) >= 1000;
   }
 
   function isHandle(input) {
@@ -104,11 +109,15 @@
       });
   }
 
-  function animateCount(el, targetValue) {
-    var current = parseInt(el.textContent.replace(/,/g, ''), 10) || 0;
+  function animateCount(el, targetValue, approximate) {
+    var current = parseInt(el.textContent.replace(/[^0-9]/g, ''), 10) || 0;
     var target = parseInt(targetValue, 10) || 0;
+    var prefix = approximate ? '≈ ' : '';
 
-    if (current === target) return;
+    if (current === target) {
+      el.textContent = prefix + formatNumber(target);
+      return;
+    }
 
     var diff = target - current;
     var steps = Math.min(Math.abs(diff), 30);
@@ -118,11 +127,11 @@
     function tick() {
       step++;
       if (step >= steps) {
-        el.textContent = formatNumber(target);
+        el.textContent = prefix + formatNumber(target);
         return;
       }
       var value = Math.round(current + stepValue * step);
-      el.textContent = formatNumber(value);
+      el.textContent = prefix + formatNumber(value);
       requestAnimationFrame(tick);
     }
 
@@ -136,8 +145,15 @@
 
     if (info.hiddenCount) {
       subscriberCountEl.textContent = 'Hidden';
+      approxNoteEl.classList.add('hidden');
     } else {
-      animateCount(subscriberCountEl, info.subscribers);
+      var approximate = isApproximate(info.subscribers);
+      animateCount(subscriberCountEl, info.subscribers, approximate);
+      if (approximate) {
+        approxNoteEl.classList.remove('hidden');
+      } else {
+        approxNoteEl.classList.add('hidden');
+      }
     }
   }
 
@@ -208,6 +224,7 @@
     counterPanel.classList.add('hidden');
     setupPanel.classList.remove('hidden');
     subscriberCountEl.textContent = '0';
+    approxNoteEl.classList.add('hidden');
     hideError();
   });
 
