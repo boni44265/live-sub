@@ -3,6 +3,8 @@
 
   var YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3/channels';
   var MIN_REFRESH_INTERVAL = 2;
+  var DEFAULT_REFRESH_INTERVAL = 5;
+  var MAX_ANIMATION_STEPS = 30;
 
   // DOM references
   var setupPanel = document.getElementById('setup-panel');
@@ -57,7 +59,7 @@
   }
 
   function isHandle(input) {
-    return input.charAt(0) === '@';
+    return input.length > 0 && input.charAt(0) === '@';
   }
 
   function getUrlParams() {
@@ -65,7 +67,7 @@
     return {
       key: params.get('key') || '',
       channel: params.get('channel') || '',
-      interval: parseInt(params.get('interval'), 10) || 5
+      interval: parseInt(params.get('interval'), 10) || DEFAULT_REFRESH_INTERVAL
     };
   }
 
@@ -111,7 +113,7 @@
     if (current === target) return;
 
     var diff = target - current;
-    var steps = Math.min(Math.abs(diff), 30);
+    var steps = Math.min(Math.abs(diff), MAX_ANIMATION_STEPS);
     var stepValue = diff / steps;
     var step = 0;
 
@@ -187,7 +189,7 @@
     }
 
     if (isNaN(interval) || interval < MIN_REFRESH_INTERVAL) {
-      interval = 5;
+      interval = DEFAULT_REFRESH_INTERVAL;
     }
 
     // Do a one-off fetch first to validate inputs before switching view
@@ -219,7 +221,7 @@
 
     var interval = urlParams.interval;
     if (isNaN(interval) || interval < MIN_REFRESH_INTERVAL) {
-      interval = 5;
+      interval = DEFAULT_REFRESH_INTERVAL;
     }
 
     setupPanel.classList.add('hidden');
