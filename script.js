@@ -18,6 +18,7 @@
   var errorEl = document.getElementById('error-message');
 
   var timerId = null;
+  var isOverlayMode = false;
 
   // ---- Helpers ----
 
@@ -41,14 +42,39 @@
     );
   }
 
+  function buildHandleApiUrl(apiKey, handle) {
+    return (
+      YOUTUBE_API_BASE +
+      '?part=statistics,snippet&forHandle=' +
+      encodeURIComponent(handle) +
+      '&key=' +
+      encodeURIComponent(apiKey)
+    );
+  }
+
   function formatNumber(num) {
     return Number(num).toLocaleString();
   }
 
+  function isHandle(input) {
+    return input.charAt(0) === '@';
+  }
+
+  function getUrlParams() {
+    var params = new URLSearchParams(window.location.search);
+    return {
+      key: params.get('key') || '',
+      channel: params.get('channel') || '',
+      interval: parseInt(params.get('interval'), 10) || 5
+    };
+  }
+
   // ---- Core logic ----
 
-  function fetchSubscriberCount(apiKey, channelId) {
-    var url = buildApiUrl(apiKey, channelId);
+  function fetchSubscriberCount(apiKey, channelInput) {
+    var url = isHandle(channelInput)
+      ? buildHandleApiUrl(apiKey, channelInput)
+      : buildApiUrl(apiKey, channelInput);
 
     return fetch(url)
       .then(function (response) {
@@ -65,7 +91,7 @@
       })
       .then(function (data) {
         if (!data.items || data.items.length === 0) {
-          throw new Error('Channel not found. Please check the Channel ID.');
+          throw new Error('Channel not found. Please check the Channel ID or handle.');
         }
 
         var channel = data.items[0];
@@ -78,6 +104,31 @@
       });
   }
 
+  function animateCount(el, targetValue) {
+    var current = parseInt(el.textContent.replace(/,/g, ''), 10) || 0;
+    var target = parseInt(targetValue, 10) || 0;
+
+    if (current === target) return;
+
+    var diff = target - current;
+    var steps = Math.min(Math.abs(diff), 30);
+    var stepValue = diff / steps;
+    var step = 0;
+
+    function tick() {
+      step++;
+      if (step >= steps) {
+        el.textContent = formatNumber(target);
+        return;
+      }
+      var value = Math.round(current + stepValue * step);
+      el.textContent = formatNumber(value);
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
   function updateDisplay(info) {
     channelNameEl.textContent = info.name;
     channelAvatarEl.src = info.avatar;
@@ -86,7 +137,7 @@
     if (info.hiddenCount) {
       subscriberCountEl.textContent = 'Hidden';
     } else {
-      subscriberCountEl.textContent = formatNumber(info.subscribers);
+      animateCount(subscriberCountEl, info.subscribers);
     }
   }
 
@@ -113,6 +164,11 @@
       clearInterval(timerId);
       timerId = null;
     }
+  }
+
+  function enableOverlayMode() {
+    isOverlayMode = true;
+    document.body.classList.add('overlay-mode');
   }
 
   // ---- Event handlers ----
@@ -154,4 +210,28 @@
     subscriberCountEl.textContent = '0';
     hideError();
   });
+
+  // ---- OBS Overlay: auto-start from URL parameters ----
+
+  var urlParams = getUrlParams();
+  if (urlParams.key && urlParams.channel) {
+    enableOverlayMode();
+
+    var interval = urlParams.interval;
+    if (isNaN(interval) || interval < MIN_REFRESH_INTERVAL) {
+      interval = 5;
+    }
+
+    setupPanel.classList.add('hidden');
+    counterPanel.classList.remove('hidden');
+
+    fetchSubscriberCount(urlParams.key, urlParams.channel)
+      .then(function (info) {
+        updateDisplay(info);
+        startPolling(urlParams.key, urlParams.channel, interval);
+      })
+      .catch(function (err) {
+        showError(err.message);
+      });
+  }
 })();

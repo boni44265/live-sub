@@ -8,7 +8,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: #0f0f0f;
   color: #e0e0e0;
   min-height: 100vh;
@@ -151,4 +151,101 @@ button:hover {
   color: #ff4444;
   font-size: 0.9rem;
   margin-top: 0.5rem;
+}
+
+/* ============================================
+   OBS Overlay Mode
+   Activated via URL params (?key=...&channel=...)
+   ============================================ */
+
+body.overlay-mode {
+  background: transparent;
+}
+
+body.overlay-mode .container {
+  max-width: 600px;
+  padding: 1rem;
+}
+
+body.overlay-mode h1 {
+  display: none;
+}
+
+body.overlay-mode .panel {
+  background: rgba(15, 15, 15, 0.75);
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 30px rgba(255, 0, 0, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+body.overlay-mode #channel-avatar {
+  width: 100px;
+  height: 100px;
+  border: 3px solid transparent;
+  background-image: linear-gradient(#1a1a1a, #1a1a1a),
+    linear-gradient(135deg, #ff0000, #ff4444, #ff0000);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+  animation: avatar-glow 3s ease-in-out infinite;
+}
+
+body.overlay-mode #channel-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+body.overlay-mode #subscriber-count {
+  font-size: 5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ffffff 0%, #ff4444 50%, #ff0000 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.4));
+  animation: count-pulse 2s ease-in-out infinite;
+  letter-spacing: -0.02em;
+}
+
+body.overlay-mode .label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.overlay-mode #stop-btn {
+  display: none;
+}
+
+/* ---------- Overlay Animations ---------- */
+
+@keyframes count-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.4));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.6));
+    transform: scale(1.01);
+  }
+}
+
+@keyframes avatar-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 0, 0, 0.5);
+  }
 }
