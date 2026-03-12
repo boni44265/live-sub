@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Live Subscriber Count</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>YouTube Live Subscriber Count</h1>
+
+    <div id="setup-panel" class="panel">
+      <p class="description">
+        Track any YouTube channel's subscriber count in real time — no Google login required.
+        You only need a free
+        <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">
+          YouTube Data API v3 key</a>.
+      </p>
+
+      <form id="setup-form">
+        <label for="api-key">API Key</label>
+        <input
+          id="api-key"
+          type="text"
+          placeholder="Enter your YouTube Data API v3 key"
+          required
+        />
+
+        <label for="channel-id">Channel ID</label>
+        <input
+          id="channel-id"
+          type="text"
+          placeholder="e.g. UCxxxxxxxxxxxxxxxxxxxxxx"
+          required
+        />
+
+        <label for="refresh-interval">Refresh interval (seconds)</label>
+        <input
+          id="refresh-interval"
+          type="number"
+          min="2"
+          max="3600"
+          value="5"
+        />
+
+        <button type="submit">Start</button>
+      </form>
+    </div>
+
+    <div id="counter-panel" class="panel hidden">
+      <div id="channel-info">
+        <img id="channel-avatar" src="" alt="Channel avatar" />
+        <h2 id="channel-name"></h2>
+      </div>
+
+      <div id="subscriber-count" aria-live="polite">0</div>
+      <p class="label">subscribers</p>
+
+      <button id="stop-btn">Stop &amp; Reset</button>
+    </div>
+
+    <p id="error-message" class="error hidden" role="alert"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
